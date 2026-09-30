@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Darshan Cutie Guru ❤️</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      background: #120b12;
+      color: #fff;
+    }
+
+    .book {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(35px) scale(.985);
+      transition: opacity .55s ease, transform .55s ease;
+      overflow: hidden;
+    }
+
+    .page.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+
+    /* Your uploaded photo is used as the cover/background on EVERY page. */
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(10, 5, 12, .54), rgba(10, 5, 12, .72)),
+        url("cover.png") center / cover no-repeat;
+      filter: saturate(.92);
+      transform: scale(1.03);
+      z-index: -2;
+    }
+
+    .page::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 5%, rgba(0,0,0,.30) 100%);
+      z-index: -1;
+    }
+
+    .card {
+      width: min(760px, 94vw);
+      max-height: 82vh;
+      overflow-y: auto;
+      padding: clamp(28px, 5vw, 58px);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 28px;
+      background: rgba(20, 8, 18, .62);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 25px 70px rgba(0,0,0,.45);
+      text-align: center;
+    }
+
+    .tiny { letter-spacing: 3px; text-transform: uppercase; font-size: .75rem; opacity: .72; }
+    h1 {
+      font-size: clamp(2.1rem, 7vw, 4.6rem);
+      line-height: 1.05;
+      margin: 18px 0;
+      color: #ffd8e8;
+      text-shadow: 0 4px 25px rgba(255, 100, 160, .28);
+    }
+    h2 {
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      margin: 0 0 22px;
+      color: #ffd8e8;
+    }
+    p {
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      font-size: clamp(1rem, 2.4vw, 1.2rem);
+      line-height: 1.85;
+      margin: 0 auto;
+      max-width: 650px;
+      color: #fff7fb;
+    }
+
+    .signature {
+      margin-top: 28px;
+      font-style: italic;
+      color: #ffc4dc;
+      font-size: 1.1rem;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      z-index: 20;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font: 600 0.95rem "Trebuchet MS", Arial, sans-serif;
+      cursor: pointer;
+      color: #fff;
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(8px);
+      transition: transform .2s, background .2s;
+    }
+    button:hover { transform: translateY(-2px); background: rgba(255, 145, 190, .25); }
+    button:active { transform: translateY(0); }
+
+    .next {
+      background: rgba(230, 82, 139, .72);
+      border-color: rgba(255, 190, 215, .55);
+    }
+
+    .dots {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 7px;
+      z-index: 20;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.35);
+      transition: all .3s;
+    }
+    .dot.active { width: 24px; border-radius: 10px; background: #ff9fc3; }
+
+    .heart {
+      position: fixed;
+      bottom: -30px;
+      font-size: 20px;
+      opacity: .65;
+      animation: float 8s linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      15% { opacity: .7; }
+      100% { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+    }
+
+    .choice-wrap {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .choice {
+      padding: 14px 22px;
+      font-size: 1rem;
+    }
+
+    .yes { background: rgba(224, 65, 128, .82); }
+    .no { background: rgba(255,255,255,.11); }
+
+    #answer {
+      display: none;
+      margin-top: 25px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .swipe-hint {
+      margin-top: 18px;
+      font: .8rem "Trebuchet MS", Arial, sans-serif;
+      opacity: .55;
+    }
+
+    @media (max-width: 600px) {
+      .page { padding: 16px; }
+      .card { max-height: 78vh; padding: 27px 20px; border-radius: 22px; }
+      .controls { bottom: 13px; }
+      .controls button { padding: 10px 15px; }
+      .dots { top: 13px; }
+      p { line-height: 1.7; }
+    }
+  </style>
+</head>
+<body>
+  <main class="book">
+
+    <section class="page active">
+      <div class="card">
+        <div class="tiny">A little something for you</div>
+        <h1>Darshan Cutie Guru ❤️</h1>
+        <p>
+          My name is <strong>Jason Bikram Singh Thakuri</strong>.<br><br>
+          I made this little website because there are some things
+          I've wanted to say to you properly.
+        </p>
+        <div class="swipe-hint">Take your time. There is no pressure. 🤍</div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="card">
+        <div class="tiny">Page 02</div>
+        <h2>How it started 💭</h2>
+        <p>
+          At first, I totally messaged you because I really liked that
+          <strong>2015 model Bullet</strong>, as I've always been a huge fan of it.
+          Honestly, that was the reason I found an excuse to start talking to you.
+          I had no idea that a simple conversation would slowly become something
+          much more meaningful to me.
+        </p>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="card">
+        <div class="tiny">Page 03</div>
+        <h2>Then I got captivated by you ✨</h2>
+        <p>
+          As we started talking every day, I found myself becoming more and more
+          captivated by you. I still remember our early talking stage, when I used
+          to ask you for tips to impress a junior from Grade 11.
+          <br><br>
+          I never truly liked that girl, but because of many circumstances,
+          I was pushed into trying to impress her. Looking back, what really
+          mattered to me was that I had someone like you to talk to.
+        </p>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="card">
+        <div class="tiny">Page 04</div>
+        <h2>The things I noticed about you 🌷</h2>
+        <p>
+          As I continued talking to you every day, I saw how truly caring,
+          kind, and friendly you are to everyone.
+          <br><br>
+          And one of the things I admired most about you was how you kept
+          your boundaries with other men. Even though I was just someone you
+          had started talking to for a month, I still found myself getting
+          jealous sometimes when I saw you talking with others.
+          <br><br>
+          Maybe it sounds silly now, but it made me realize how much I had
+          already started caring about you.
+        </p>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="card">
+        <div class="tiny">Page 05</div>
+        <h2>About the misunderstandings 🤍</h2>
+        <p>
+          There have been many misunderstandings between us — especially times
+          when I thought you were ignoring me.
+          <br><br>
+          But trust me, I was never truly angry with you.
+          I was just hurt. Nothing more than that.
+          <br><br>
+          Sometimes I didn't know how to express what I was feeling,
+          and maybe that made things harder than they needed to be.
+        </p>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="card">
+        <div class="tiny">Page 06</div>
+        <h2>What I promise ❤️</h2>
+        <p>
+          I promise to always care for you, respect you, and make an effort
+          to make you feel special.
+          <br><br>
+          I will always try to live up to the expectations you have of me,
+          while also understanding that neither of us is perfect.
+          <br><br>
+          Most importantly, I want you to feel valued, heard, and comfortable
+          being yourself around me.
+        </p>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="card">
+        <div class="tiny">Page 07 · The last page</div>
+        <h2>So... will you give me a chance? 🥺❤️</h2>
+        <p>
+          I know I've asked before, and I know you've given me your answer before.
+          I don't want this website to pressure you into anything.
+          <br><br>
+          I just wanted to be honest with you one more time.
+          If you ever feel that you could give us a chance, I'd be grateful,
+          and I'd do my best to make that chance something worth having.
+          <br><br>
+          But whatever your answer is, I promise I'll respect it.
+        </p>
+
+        <div class="choice-wrap">
+          <button class="choice yes" onclick="answerYes()">❤️ I'll give it a chance</button>
+          <button class="choice no" onclick="answerNo()">🤍 I don't feel the same</button>
+        </div>
+
+        <div id="answer"></div>
+
+        <div class="signature">
+          Your true chelaa and supporter,<br>
+          <strong>Jason Bikram Singh Thakurii ❤️</strong>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="dots" id="dots"></div>
+
+  <div class="controls">
+    <button id="backBtn" onclick="prevPage()">← Back</button>
+    <button class="next" id="nextBtn" onclick="nextPage()">Next →</button>
+  </div>
+
+  <script>
+    const pages = [...document.querySelectorAll(".page")];
+    const dots = document.getElementById("dots");
+    let current = 0;
+
+    pages.forEach((_, i) => {
+      const d = document.createElement("span");
+      d.className = "dot" + (i === 0 ? " active" : "");
+      d.onclick = () => showPage(i);
+      dots.appendChild(d);
+    });
+
+    function showPage(index) {
+      current = Math.max(0, Math.min(index, pages.length - 1));
+      pages.forEach((p, i) => p.classList.toggle("active", i === current));
+      [...dots.children].forEach((d, i) => d.classList.toggle("active", i === current));
+      document.getElementById("backBtn").style.visibility = current === 0 ? "hidden" : "visible";
+      document.getElementById("nextBtn").style.display = current === pages.length - 1 ? "none" : "inline-block";
+    }
+
+    function nextPage() { showPage(current + 1); }
+    function prevPage() { showPage(current - 1); }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowRight") nextPage();
+      if (e.key === "ArrowLeft") prevPage();
+    });
+
+    let touchStartX = 0;
+    document.addEventListener("touchstart", e => touchStartX = e.changedTouches[0].screenX, {passive:true});
+    document.addEventListener("touchend", e => {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(dx) > 55) dx < 0 ? nextPage() : prevPage();
+    }, {passive:true});
+
+    function answerYes() {
+      const box = document.getElementById("answer");
+      box.style.display = "block";
+      box.innerHTML = "🥹❤️ Thank you for giving me a chance. I'll never take it for granted.";
+    }
+
+    function answerNo() {
+      const box = document.getElementById("answer");
+      box.style.display = "block";
+      box.innerHTML = "Thank you for being honest with me. 🤍 I respect your answer, and I don't want you to feel pressured or guilty. You will always have my respect.";
+    }
+
+    // Gentle floating hearts.
+    setInterval(() => {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = ["♥", "♡", "❤", "✦"][Math.floor(Math.random() * 4)];
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.animationDuration = (6 + Math.random() * 5) + "s";
+      h.style.fontSize = (14 + Math.random() * 18) + "px";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 12000);
+    }, 900);
+
+    showPage(0);
+  </script>
+</body>
+</html>
